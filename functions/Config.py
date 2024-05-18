@@ -40,7 +40,7 @@ response = requests.get(url_punt_return_yards)
 soup_return_yards = BeautifulSoup(response.content, 'html.parser')
 
 # Definimos las variables para las lecturas de los csv
-BasicStats = "/Datasets/Basic_Stats.csv"
+BasicStats = "Basic_Stats.csv"
 Defensive = "/Datasets/Career_Stats_Defensive.csv"
 KickReturn = "/Datasets/Career_Stats_Kick_Return.csv"
 Offensive = "/Datasets/Career_Stats_Offensive_Line.csv"
