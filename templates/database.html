@@ -56,29 +56,30 @@
         <!-- Header -->
         <header class="w3-container" style="padding-top: 2vw">
             <h5>
-                <b><i class="fa fa-users"></i> Team </b>
+                <b><i class="fa fa-database"></i> Database </b>
             </h5>
         </header>
 
-        <div class="w3-row-padding w3-margin-bottom">
-            <div class="w3-third">
-                <div class="w3-container w3-red w3-padding-16">
-                    <div class="w3-clear"></div>
-                    <h4>Arredondo Díaz Ana Paola Amor</h4>
-                </div>
-            </div>
-            <div class="w3-third">
-                <div class="w3-container w3-blue w3-padding-16">
-                    <div class="w3-clear"></div>
-                    <h4>Avalos Bermúdez Fernanda</h4>
-                </div>
-            </div>
-            <div class="w3-third">
-                <div class="w3-container w3-teal w3-padding-16">
-                    <div class="w3-clear"></div>
-                    <h4>Vázquez Anaya Joel</h4>
-                </div>
-            </div>
+        <div class="w3-container w3-padding-32">
+            <h5>Seleccione la base de datos:</h5>
+            <form method="post">
+                <select name="dataset" class="w3-select" onchange="this.form.submit()">
+                    <option value="basic_stats" {% if selected_dataset == 'basic_stats' %}selected{% endif %}>Basic Stats</option>
+                    <option value="Career_Stats_Offensive_Line" {% if selected_dataset == 'Career_Stats_Offensive_Line' %}selected{% endif %}>Career Stats Offensive Line</option>
+                    <option value="Career_Stats_Defensive" {% if selected_dataset == 'Career_Stats_Defensive' %}selected{% endif %}>Defensive Stats</option>
+                    <option value="Game_Logs_Quarterback" {% if selected_dataset == 'Game_Logs_Quarterback' %}selected{% endif %}>QB Stats</option>
+                    <option value="Game_Logs_Wide_Receiver_and_Tight_End" {% if selected_dataset == 'Game_Logs_Wide_Receiver_and_Tight_End' %}selected{% endif %}>WE and TE Stats</option>
+                    <option value="Game_Logs_Runningback" {% if selected_dataset == 'Game_Logs_Runningback' %}selected{% endif %}>RB Stats</option>
+                    <option value="Game_Logs_Offensive_Line" {% if selected_dataset == 'Game_Logs_Offensive_Line' %}selected{% endif %}>Offensive History Stats</option>
+                    <option value="Game_Logs_Defensive_Lineman" {% if selected_dataset == 'Game_Logs_Defensive_Lineman' %}selected{% endif %}>Defensive History Stats</option>
+                    <option value="Career_Stats_Kick_Return" {% if selected_dataset == 'Career_Stats_Kick_Return' %}selected{% endif %}>Kick Return Stats</option>
+                </select>
+            </form>
+        </div>
+
+        <div class="w3-container">
+            <h5>Datos de: {{ selected_dataset | title }}</h5> <!-- Título agregado -->
+            {{ table_html | safe }}
         </div>
 
         <!-- Footer -->
