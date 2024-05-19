@@ -1,12 +1,6 @@
 # Importamos las Librerías que vamos a utilizar para el desarollo del proyecto
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
 import requests
 from bs4 import BeautifulSoup
-import schedule
-import time
 
 #Declaraciones para poder ejecutar el código
 
