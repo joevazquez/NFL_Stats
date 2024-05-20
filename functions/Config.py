@@ -6,6 +6,7 @@ import csv
 from datetime import datetime
 import schedule
 import time
+from threading import Thread
 
 #Declaraciones para poder ejecutar el código
 
@@ -100,7 +101,6 @@ def scrape_data(category):
     else:
         return None, None
 
-# Función para realizar el web scraping para todas las categorías
 def scrape_all_data():
     for category in urls:
         scrape_data(category)
@@ -108,7 +108,16 @@ def scrape_all_data():
 # Programar la tarea de web scraping para que se ejecute todos los martes a las 10 a.m.
 schedule.every().tuesday.at("10:00").do(scrape_all_data)
 
-# Ejecutar el ciclo principal para que la programación de tareas funcione correctamente
-while True:
-    schedule.run_pending()
-    time.sleep(1)
+# Mantener el servicio activo ejecutando un bucle infinito
+def run_scheduler():
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
+
+# Iniciar el planificador en un hilo separado
+def start_scheduler():
+    scheduler_thread = Thread(target=run_scheduler)
+    scheduler_thread.start()
+
+# Iniciar el planificador al ejecutar el archivo
+start_scheduler()
