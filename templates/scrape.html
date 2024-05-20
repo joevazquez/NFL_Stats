@@ -85,12 +85,27 @@
         </div>
 
         <div class="w3-container">
-            {% if data_html %}
-                <h5>Data Scraped:</h5>
-                {{ data_html | safe }}
-            {% endif %}
+            <h5>Datos de: {{ selected_category | title }}</h5> <!-- Título agregado -->
+            <table class="w3-table w3-bordered w3-striped w3-hoverable">
+                <thead>
+                    <tr>
+                        {% for header in headers %}
+                            <th>{{ header }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in rows %}
+                        <tr>
+                            {% for cell in row %}
+                                <td>{{ cell }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
-
+        
         <!-- Footer -->
         <footer class="w3-container w3-padding-16 w3-light-grey">
             <p>

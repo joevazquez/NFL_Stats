@@ -3,6 +3,9 @@ import requests
 from bs4 import BeautifulSoup
 import os
 import csv
+from datetime import datetime
+import schedule
+import time
 
 #Declaraciones para poder ejecutar el código
 
@@ -31,7 +34,7 @@ LogsQB =  "Game_Logs_Quarterback.csv"
 LogsRB =  "Game_Logs_Runningback.csv"
 LogsWRandTE =  "Game_Logs_Wide_Receiver_and_Tight_End.csv"
 
-# URLs de las estadísticas
+# URLs de las estadísticas para alimentar el Web Scraping
 urls = {
     "passing_yards": "https://www.nfl.com/stats/player-stats/category/passing/2023/reg/all/passingyards/desc",
     "rushing_yards": "https://www.nfl.com/stats/player-stats/category/rushing/2023/reg/all/rushingyards/desc",
@@ -43,6 +46,10 @@ urls = {
 # Crear el directorio de salida si no existe
 output_dir = 'Scraping_CSV'
 os.makedirs(output_dir, exist_ok=True)
+
+# Crear el directorio para los logs si no existe
+log_dir = 'Logs'
+os.makedirs(log_dir, exist_ok=True)
 
 def get_soup(url):
     response = requests.get(url)
@@ -67,12 +74,41 @@ def save_to_csv(headers, rows, filename):
         writer.writerow(headers)
         writer.writerows(rows)
 
+def save_to_log(category, status):
+    log_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    log_data = [log_time, category, status]
+    with open(os.path.join(log_dir, 'logs.csv'), 'a', newline='', encoding='utf-8') as file:
+        writer = csv.writer(file)
+        writer.writerow(log_data)
+
 def scrape_data(category):
     url = urls.get(category)
     if url:
-        soup = get_soup(url)
-        headers, rows = extract_data(soup)
-        save_to_csv(headers, rows, f"{category}.csv")
-        return f"Data for {category} saved successfully."
+        try:
+            soup = get_soup(url)
+            headers, rows = extract_data(soup)
+            # Guardar los datos en un archivo CSV
+            save_to_csv(headers, rows, f"{category}.csv")
+            # Guardar el registro en el archivo de logs
+            save_to_log(category, "Success")
+            # Devolver los datos extraídos
+            return headers, rows
+        except Exception as e:
+            # Si ocurre algún error, guardar el registro de error en el archivo de logs
+            save_to_log(category, f"Error: {str(e)}")
+            return None, None
     else:
-        return f"Error: Invalid category {category}."
+        return None, None
+
+# Función para realizar el web scraping para todas las categorías
+def scrape_all_data():
+    for category in urls:
+        scrape_data(category)
+
+# Programar la tarea de web scraping para que se ejecute todos los martes a las 10 a.m.
+schedule.every().tuesday.at("10:00").do(scrape_all_data)
+
+# Ejecutar el ciclo principal para que la programación de tareas funcione correctamente
+while True:
+    schedule.run_pending()
+    time.sleep(1)

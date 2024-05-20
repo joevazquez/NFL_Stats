@@ -102,10 +102,14 @@ def scrape():
     if request.method == "POST":
         category = request.form.get("category")
         if category:
-            result = scrape_data(category)
-            flash(result)
-            return redirect(url_for('scrape'))
-    return render_template("scrape.html", categories=urls.keys())
+            headers, rows = Config.scrape_data(category)  # Modifica esta línea para obtener los encabezados y las filas
+            if headers and rows:
+                return render_template("scrape.html", categories=Config.urls.keys(), headers=headers, rows=rows)
+            else:
+                flash("Error: No se pudieron extraer los datos.")
+                return redirect(url_for('scrape'))
+    return render_template("scrape.html", categories=Config.urls.keys())
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000, debug=True)
