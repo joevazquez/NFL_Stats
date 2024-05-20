@@ -106,15 +106,14 @@ def scrape_all_data():
         scrape_data(category)
 
 # Programar la tarea de web scraping para que se ejecute todos los martes a las 10 a.m.
-schedule.every().tuesday.at("10:00").do(scrape_all_data)
+schedule.every().thursday.at("09:00").do(scrape_all_data)
 
-# Mantener el servicio activo ejecutando un bucle infinito
+# Mantener el servicio activo ejecutando un bucle infinito en un hilo separado
 def run_scheduler():
     while True:
         schedule.run_pending()
         time.sleep(1)
 
-# Iniciar el planificador en un hilo separado
 def start_scheduler():
     scheduler_thread = Thread(target=run_scheduler)
     scheduler_thread.start()
