@@ -1,6 +1,8 @@
 # Importamos las Librerías que vamos a utilizar para el desarollo del proyecto
 import requests
 from bs4 import BeautifulSoup
+import os
+import csv
 
 #Declaraciones para poder ejecutar el código
 
@@ -11,27 +13,6 @@ url_reciving_yards = "https://www.nfl.com/stats/player-stats/category/receiving/
 url_interceptions = "https://www.nfl.com/stats/player-stats/category/interceptions/2023/reg/all/defensiveinterceptions/desc"
 url_punt_return_yards = "https://www.nfl.com/stats/player-stats/category/punt-returns/2023/reg/all/puntreturnsaverageyards/desc"
 
-# Declaración de las Sopas para poder hacer web Scraping por separado 
-
-# Hacer una solicitud a la página url_passing_yards
-response = requests.get(url_passing_yards)
-soup_passing_yards = BeautifulSoup(response.content, 'html.parser')
-
-# Hacer una solicitud a la página url_rushing_yards
-response = requests.get(url_rushing_yards)
-soup_rushing_yards = BeautifulSoup(response.content, 'html.parser')
-
-# Hacer una solicitud a la página url_reciving_yards
-response = requests.get(url_reciving_yards)
-soup_reciving_yards = BeautifulSoup(response.content, 'html.parser')
-
-# Hacer una solicitud a la página url_interceptions
-response = requests.get(url_interceptions)
-soup_interceptions = BeautifulSoup(response.content, 'html.parser')
-
-# Hacer una solicitud a la página url_punt_return_yards
-response = requests.get(url_punt_return_yards)
-soup_return_yards = BeautifulSoup(response.content, 'html.parser')
 
 # Definimos las variables para las lecturas de los csv
 BasicStats = "Basic_Stats.csv"
@@ -49,3 +30,49 @@ LogsOffensive =  "Game_Logs_Offensive_Line.csv"
 LogsQB =  "Game_Logs_Quarterback.csv"
 LogsRB =  "Game_Logs_Runningback.csv"
 LogsWRandTE =  "Game_Logs_Wide_Receiver_and_Tight_End.csv"
+
+# URLs de las estadísticas
+urls = {
+    "passing_yards": "https://www.nfl.com/stats/player-stats/category/passing/2023/reg/all/passingyards/desc",
+    "rushing_yards": "https://www.nfl.com/stats/player-stats/category/rushing/2023/reg/all/rushingyards/desc",
+    "receiving_yards": "https://www.nfl.com/stats/player-stats/category/receiving/2023/reg/all/receivingreceptions/desc",
+    "interceptions": "https://www.nfl.com/stats/player-stats/category/interceptions/2023/reg/all/defensiveinterceptions/desc",
+    "punt_return_yards": "https://www.nfl.com/stats/player-stats/category/punt-returns/2023/reg/all/puntreturnsaverageyards/desc"
+}
+
+# Crear el directorio de salida si no existe
+output_dir = 'Scraping_CSV'
+os.makedirs(output_dir, exist_ok=True)
+
+def get_soup(url):
+    response = requests.get(url)
+    return BeautifulSoup(response.content, 'html.parser')
+
+def extract_data(soup):
+    table = soup.find('table')  # Asegúrate de que esto encuentre la tabla correcta
+    headers = [th.text.strip() for th in table.find_all('th')]
+    rows = []
+
+    for row in table.find_all('tr')[1:]:
+        cols = row.find_all('td')
+        cols = [col.text.strip() for col in cols]
+        rows.append(cols)
+
+    return headers, rows
+
+def save_to_csv(headers, rows, filename):
+    filepath = os.path.join(output_dir, filename)
+    with open(filepath, 'w', newline='', encoding='utf-8') as file:
+        writer = csv.writer(file)
+        writer.writerow(headers)
+        writer.writerows(rows)
+
+def scrape_data(category):
+    url = urls.get(category)
+    if url:
+        soup = get_soup(url)
+        headers, rows = extract_data(soup)
+        save_to_csv(headers, rows, f"{category}.csv")
+        return f"Data for {category} saved successfully."
+    else:
+        return f"Error: Invalid category {category}."

@@ -1,25 +1,75 @@
 import os
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for, flash
 import pandas as pd
-import functions.Config as Config
+import csv
+import requests
+from bs4 import BeautifulSoup
+from functions import Config
 
 app = Flask(__name__)
+app.secret_key = os.urandom(24)  # Generar una clave secreta segura
 
 # Ruta base para los archivos CSV
 base_csv_path = 'Datasets'
 
 # Diccionario para las rutas de los archivos CSV
 datasets = {
-    "basic_stats": os.path.join(base_csv_path, Config.BasicStats),
-    "Career_Stats_Offensive_Line": os.path.join(base_csv_path, Config.Offensive),
-    "Career_Stats_Defensive": os.path.join(base_csv_path, Config.Defensive),
-    "Game_Logs_Quarterback": os.path.join(base_csv_path, Config.LogsQB),
-    "Game_Logs_Wide_Receiver_and_Tight_End": os.path.join(base_csv_path, Config.LogsWRandTE),
-    "Game_Logs_Runningback": os.path.join(base_csv_path, Config.LogsRB),
-    "Game_Logs_Offensive_Line": os.path.join(base_csv_path, Config.LogsOffensive),
-    "Game_Logs_Defensive_Lineman": os.path.join(base_csv_path, Config.LogsDefensive),
-    "Career_Stats_Kick_Return": os.path.join(base_csv_path, Config.KickReturn)
+    "basic_stats": os.path.join(base_csv_path, "Basic_Stats.csv"),
+    "Career_Stats_Offensive_Line": os.path.join(base_csv_path, "Career_Stats_Offensive_Line.csv"),
+    "Career_Stats_Defensive": os.path.join(base_csv_path, "Career_Stats_Defensive.csv"),
+    "Game_Logs_Quarterback": os.path.join(base_csv_path, "Game_Logs_Quarterback.csv"),
+    "Game_Logs_Wide_Receiver_and_Tight_End": os.path.join(base_csv_path, "Game_Logs_Wide_Receiver_and_Tight_End.csv"),
+    "Game_Logs_Runningback": os.path.join(base_csv_path, "Game_Logs_Runningback.csv"),
+    "Game_Logs_Offensive_Line": os.path.join(base_csv_path, "Game_Logs_Offensive_Line.csv"),
+    "Game_Logs_Defensive_Lineman": os.path.join(base_csv_path, "Game_Logs_Defensive_Lineman.csv"),
+    "Career_Stats_Kick_Return": os.path.join(base_csv_path, "Career_Stats_Kick_Return.csv")
 }
+
+# URLs de las estadísticas
+urls = {
+    "passing_yards": "https://www.nfl.com/stats/player-stats/category/passing/2023/reg/all/passingyards/desc",
+    "rushing_yards": "https://www.nfl.com/stats/player-stats/category/rushing/2023/reg/all/rushingyards/desc",
+    "receiving_yards": "https://www.nfl.com/stats/player-stats/category/receiving/2023/reg/all/receivingreceptions/desc",
+    "interceptions": "https://www.nfl.com/stats/player-stats/category/interceptions/2023/reg/all/defensiveinterceptions/desc",
+    "punt_return_yards": "https://www.nfl.com/stats/player-stats/category/punt-returns/2023/reg/all/puntreturnsaverageyards/desc"
+}
+
+# Crear el directorio de salida si no existe
+output_dir = 'Scraping_CSV'
+os.makedirs(output_dir, exist_ok=True)
+
+def get_soup(url):
+    response = requests.get(url)
+    return BeautifulSoup(response.content, 'html.parser')
+
+def extract_data(soup):
+    table = soup.find('table')  # Asegúrate de que esto encuentre la tabla correcta
+    headers = [th.text.strip() for th in table.find_all('th')]
+    rows = []
+
+    for row in table.find_all('tr')[1:]:
+        cols = row.find_all('td')
+        cols = [col.text.strip() for col in cols]
+        rows.append(cols)
+
+    return headers, rows
+
+def save_to_csv(headers, rows, filename):
+    filepath = os.path.join(output_dir, filename)
+    with open(filepath, 'w', newline='', encoding='utf-8') as file:
+        writer = csv.writer(file)
+        writer.writerow(headers)
+        writer.writerows(rows)
+
+def scrape_data(category):
+    url = urls.get(category)
+    if url:
+        soup = get_soup(url)
+        headers, rows = extract_data(soup)
+        save_to_csv(headers, rows, f"{category}.csv")
+        return f"Data for {category} saved successfully."
+    else:
+        return f"Error: Invalid category {category}."
 
 @app.route("/")
 def home():
@@ -28,7 +78,6 @@ def home():
 @app.route("/team")
 def team():
     return render_template("team.html")
-
 
 @app.route("/database", methods=["GET", "POST"])
 def database():
@@ -47,6 +96,16 @@ def database():
 
     # Pasar el nombre del dataset al contexto de la plantilla
     return render_template("database.html", table_html=df_html, selected_dataset=selected_dataset.replace('_', ' '))
+
+@app.route("/scrape", methods=["GET", "POST"])
+def scrape():
+    if request.method == "POST":
+        category = request.form.get("category")
+        if category:
+            result = scrape_data(category)
+            flash(result)
+            return redirect(url_for('scrape'))
+    return render_template("scrape.html", categories=urls.keys())
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000, debug=True)
