@@ -5,6 +5,7 @@ import csv
 import requests
 from bs4 import BeautifulSoup
 from functions import Config
+import matplotlib.pyplot as plt
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)  # Generar una clave secreta segura
@@ -109,6 +110,21 @@ def scrape():
                 flash("Error: No se pudieron extraer los datos.")
                 return redirect(url_for('scrape'))
     return render_template("scrape.html", categories=Config.urls.keys())
+
+@app.route("/chart_current_status", methods=["GET", "POST"])
+def chart():
+    if request.method == "POST":
+        experience = request.form.get("experience")
+        status = request.form.get("status")
+        filtered_data = Config.load_and_filter_data(experience, status)
+        Config.plot_pie_chart(filtered_data)
+        
+        headers = filtered_data.columns.tolist()
+        rows = filtered_data.values.tolist()
+        
+        return render_template("chart_current_status.html", headers=headers, rows=rows)
+    
+    return render_template("chart_current_status.html")
 
 
 if __name__ == "__main__":

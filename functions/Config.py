@@ -7,6 +7,9 @@ from datetime import datetime
 import schedule
 import time
 from threading import Thread
+import matplotlib.pyplot as plt
+import pandas as pd
+from collections import Counter
 
 #Declaraciones para poder ejecutar el código
 
@@ -52,6 +55,8 @@ os.makedirs(output_dir, exist_ok=True)
 log_dir = 'Logs'
 os.makedirs(log_dir, exist_ok=True)
 
+# Se crea código para hacer la sopa y hacer la extracción de la data
+
 def get_soup(url):
     response = requests.get(url)
     return BeautifulSoup(response.content, 'html.parser')
@@ -68,6 +73,8 @@ def extract_data(soup):
 
     return headers, rows
 
+# Se crea código para escribir los logs 
+
 def save_to_csv(headers, rows, filename):
     filepath = os.path.join(output_dir, filename)
     with open(filepath, 'w', newline='', encoding='utf-8') as file:
@@ -81,6 +88,8 @@ def save_to_log(category, status):
     with open(os.path.join(log_dir, 'logs.csv'), 'a', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
         writer.writerow(log_data)
+
+# Se crea código para hacer el Web Scraping
 
 def scrape_data(category):
     url = urls.get(category)
@@ -106,7 +115,7 @@ def scrape_all_data():
         scrape_data(category)
 
 # Programar la tarea de web scraping para que se ejecute todos los martes a las 10 a.m.
-schedule.every().thursday.at("09:00").do(scrape_all_data)
+schedule.every().thursday.at("10:00").do(scrape_all_data)
 
 # Mantener el servicio activo ejecutando un bucle infinito en un hilo separado
 def run_scheduler():
@@ -120,3 +129,75 @@ def start_scheduler():
 
 # Iniciar el planificador al ejecutar el archivo
 start_scheduler()
+
+# Crea la gráfica de Status vs Experiencia
+path_csv_read = 'Datasets/Basic_Stats.csv'
+
+def load_and_filter_data(experience, status):
+    df = pd.read_csv(path_csv_read)
+    
+    # Filtrar por experiencia
+    experience_map = {
+        'Rookie': ['Rookie'],
+        '0 Season': ['0 Season'],
+        '1 Season': ['1 Season'],
+        '2nd season': ['2nd season'],
+        '3th season': ['3 Seasons', '3th season'],
+        '4th season': ['4 Seasons', '4th season'],
+        '5th season': ['5 Seasons', '5th season'],
+        '6th season': ['6 Seasons', '6th season'],
+        '7th season': ['7 Seasons', '7th season'],
+        '8th season': ['8 Seasons', '8th season'],
+        '9th season': ['9 Seasons', '9th season'],
+        '10th season': ['10 Seasons', '10th season'],
+        '11th season': ['11 Seasons', '11th season'],
+        '13th season': ['13 Seasons', '13th season'],
+        '14th season': ['14 Seasons', '14th season'],
+        '15th season': ['15 Seasons', '15th season'],
+        '16th season': ['16 Seasons', '16th season'],
+        '17th season': ['17 Seasons', '17th season'],
+        '18th season': ['18 Seasons', '18th season'],
+        '19th season': ['19 Seasons', '19th season'],
+        '20th season': ['20 Seasons', '20th season'],
+        '21th season': ['21 Seasons', '21th season'],
+        '22th season': ['22 Seasons', '22th season'],
+        '23th season': ['23 Seasons', '23th season'],
+        '24th season': ['24 Seasons', '24th season'],
+        '25th season': ['25 Seasons', '25th season']
+    }
+    
+    if experience in experience_map:
+        filtered_data = df[df['Experience'].isin(experience_map[experience])]
+    else:
+        filtered_data = df  # No hay filtro, mostrar todos los datos
+
+    # Filtrar por estado
+    status_map = {
+        'Active': 'Active',
+        'Retired': 'Retired',
+        'Injured Reserve': 'Injured Reserve',
+        'Physically Unable to Perform': 'Physically Unable to Perform',
+        'Suspended': 'Suspended',
+        'Unsigned Free Agent': 'Unsigned Free Agent'
+    }
+    
+    if status in status_map:
+        filtered_data = filtered_data[filtered_data['Current Status'] == status_map[status]]
+
+    return filtered_data
+
+# Crea la gráfica
+def plot_pie_chart(data):
+    plt.figure(figsize=(8, 8))  # Ajusta el tamaño de la figura si es necesario
+    counts = data['Current Status'].value_counts()
+    
+    # Generar el gráfico de pastel sin etiquetas
+    patches, texts, autotexts = plt.pie(counts, autopct='%1.1f%%', startangle=90)
+    
+    # Agregar una leyenda a la derecha
+    plt.legend(patches, counts.index, loc="center left", bbox_to_anchor=(1, 0.5))
+    
+    plt.title('Player Distribution by Current Status')
+    plt.tight_layout()
+    plt.savefig('static/plot.png')
+    plt.close()  # Cierra la figura para evitar problemas de sobrecarga de gráficos
