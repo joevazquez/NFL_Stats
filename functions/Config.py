@@ -9,7 +9,7 @@ import time
 from threading import Thread
 import matplotlib.pyplot as plt
 import pandas as pd
-from collections import Counter
+import io
 
 #Declaraciones para poder ejecutar el código
 
@@ -130,9 +130,10 @@ def start_scheduler():
 # Iniciar el planificador al ejecutar el archivo
 start_scheduler()
 
-# Crea la gráfica de Status vs Experiencia
+# Dirección para poder obtener el Dataset
 path_csv_read = 'Datasets/Basic_Stats.csv'
 
+# Se crea los filtros para poder tener la funcionalidad de la tabla
 def load_and_filter_data(experience, status):
     df = pd.read_csv(path_csv_read)
     
@@ -202,7 +203,7 @@ def load_and_filter_data(experience, status):
     return filtered_by_status
 
 
-# Crea la gráfica
+# Crea la gráfica de Status vs Experiencia
 def plot_pie_chart(data):
     plt.figure(figsize=(8, 8))  # Ajusta el tamaño de la figura si es necesario
     status_counts = data['Current Status'].value_counts()
@@ -218,3 +219,45 @@ def plot_pie_chart(data):
     plt.tight_layout()
     plt.savefig('static/plot.png')  # Guardamos la gráfica en un archivo
     plt.close()  # Cerramos la figura para evitar problemas de sobrecarga de gráficos
+
+
+def generate_top_nfl_player_graph(data):
+    # Filtrar los jugadores activos
+    active_players = data[data['Current Status'] == 'Active']
+
+    # Obtener las universidades con más jugadores activos
+    top_colleges = active_players['College'].value_counts().nlargest(10)
+
+    # Crear la gráfica
+    plt.figure(figsize=(10, 6))
+    top_colleges.plot(kind='bar', color='skyblue')
+    plt.title('Top 10 Universidades con más jugadores activos en la NFL')
+    plt.xlabel('Universidad')
+    plt.ylabel('Número de jugadores activos')
+    plt.tight_layout()
+    plt.savefig('static/top_colleges.png')
+    plt.close()
+
+    return 'static/top_colleges.png'
+
+
+def generate_least_nfl_player_graph(data):
+    # Filtrar los jugadores activos
+    active_players = data[data['Current Status'] == 'Active']
+
+    # Obtener las universidades con menos jugadores activos
+    least_colleges = active_players['College'].value_counts().nsmallest(10)
+
+    # Crear la gráfica
+    plt.figure(figsize=(10, 6))
+    least_colleges.plot(kind='bar', color='lightcoral')
+    plt.title('Top 10 Universidades con menos jugadores activos en la NFL')
+    plt.xlabel('Universidad')
+    plt.ylabel('Número de jugadores activos')
+    plt.tight_layout()
+    plt.savefig('static/least_colleges.png')
+    plt.close()
+
+    return 'static/least_colleges.png'
+
+

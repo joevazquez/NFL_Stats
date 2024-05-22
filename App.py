@@ -126,5 +126,23 @@ def chart():
     
     return render_template("chart_current_status.html")
 
+@app.route('/college')
+def college_top_worst():
+    # Cargar el conjunto de datos
+    data = pd.read_csv('Datasets/Basic_Stats.csv')
+    
+    # Determinar si mostrar el top 10 con más o menos jugadores
+    filter_value = request.args.get('filter', 'Top')
+    
+    # Llamar a la función correspondiente para generar la gráfica
+    if filter_value == 'Top':
+        graph_path = Config.generate_top_nfl_player_graph(data)
+    elif filter_value == 'Least':
+        graph_path = Config.generate_least_nfl_player_graph(data)
+    else:
+        raise ValueError("Invalid filter value")
+    
+    return render_template('college.html', graph_path=graph_path)
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000, debug=True)
