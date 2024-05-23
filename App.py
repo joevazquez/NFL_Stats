@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 app = Flask(__name__)
 app.secret_key = os.urandom(24)  # Generar una clave secreta segura
 
+#Coment test
 # Ruta base para los archivos CSV
 base_csv_path = 'Datasets'
 
