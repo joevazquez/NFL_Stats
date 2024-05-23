@@ -40,11 +40,16 @@ LogsWRandTE =  "Game_Logs_Wide_Receiver_and_Tight_End.csv"
 
 # URLs de las estadísticas para alimentar el Web Scraping
 urls = {
-    "passing_yards": "https://www.nfl.com/stats/player-stats/category/passing/2023/reg/all/passingyards/desc",
-    "rushing_yards": "https://www.nfl.com/stats/player-stats/category/rushing/2023/reg/all/rushingyards/desc",
-    "receiving_yards": "https://www.nfl.com/stats/player-stats/category/receiving/2023/reg/all/receivingreceptions/desc",
-    "interceptions": "https://www.nfl.com/stats/player-stats/category/interceptions/2023/reg/all/defensiveinterceptions/desc",
-    "punt_return_yards": "https://www.nfl.com/stats/player-stats/category/punt-returns/2023/reg/all/puntreturnsaverageyards/desc"
+    "Passing_Yards": "https://www.nfl.com/stats/player-stats/category/passing/2023/reg/all/passingyards/desc",
+    "Rushing_Yards": "https://www.nfl.com/stats/player-stats/category/rushing/2023/reg/all/rushingyards/desc",
+    "Receiving_Yards": "https://www.nfl.com/stats/player-stats/category/receiving/2023/reg/all/receivingreceptions/desc",
+    "Interceptions": "https://www.nfl.com/stats/player-stats/category/interceptions/2023/reg/all/defensiveinterceptions/desc",
+    "Punt_Return_Yards": "https://www.nfl.com/stats/player-stats/category/punt-returns/2023/reg/all/puntreturnsaverageyards/desc",
+    "Defense_Passing_Yards" : "https://www.nfl.com/stats/team-stats/defense/passing/2023/reg/all",
+    "Defense_Rushing_Yards" : "https://www.nfl.com/stats/team-stats/defense/rushing/2023/reg/all",
+    "Defense_Scoring" : "https://www.nfl.com/stats/team-stats/defense/scoring/2023/reg/all",
+    "Interception_by_Team" :  "https://www.nfl.com/stats/team-stats/defense/interceptions/2023/reg/all",
+    "Fumbles_by_Team" :  "https://www.nfl.com/stats/team-stats/defense/fumbles/2023/reg/all"
 }
 
 # Crear el directorio de salida si no existe
@@ -220,7 +225,7 @@ def plot_pie_chart(data):
     plt.savefig('static/plot.png')  # Guardamos la gráfica en un archivo
     plt.close()  # Cerramos la figura para evitar problemas de sobrecarga de gráficos
 
-
+#Genera la gráfica con las universidades con el mayor número de jugadores activos en la NFL
 def generate_top_nfl_player_graph(data):
     # Filtrar los jugadores activos
     active_players = data[data['Current Status'] == 'Active']
@@ -240,7 +245,7 @@ def generate_top_nfl_player_graph(data):
 
     return 'static/top_colleges.png'
 
-
+#Genera la gráfica con las universidades con el menor número de jugadores activos en la NFL
 def generate_least_nfl_player_graph(data):
     # Filtrar los jugadores activos
     active_players = data[data['Current Status'] == 'Active']
@@ -260,4 +265,38 @@ def generate_least_nfl_player_graph(data):
 
     return 'static/least_colleges.png'
 
+#Genera la gráfica con los equipos con menor número de TD por carrera
+def generate_top_nfl_team_graph(data):
+    # Asegurarse de que los nombres de equipos sean únicos y ordenar por el menor número de TD
+    bottom_teams = data.drop_duplicates(subset=['Team']).sort_values(by='TD', ascending=True).head(10)
 
+    # Crear la gráfica
+    plt.figure(figsize=(10, 6))
+    plt.bar(bottom_teams['Team'], bottom_teams['TD'], color='red')
+    plt.title('Top 10 Equipos con Menor Número de TD por Carrera en la NFL')
+    plt.xlabel('')
+    plt.ylabel('Número de TD')
+    plt.xticks(rotation=45, ha='right')
+    plt.tight_layout()
+    plt.savefig('static/top_teams_receiving_td.png')
+    plt.close()
+
+    return 'static/top_teams_receiving_td.png'
+
+#Genera la gráfica con los equipos con menor número de TD por carrera
+def generate_least_nfl_team_graph(data):
+    #  Asegurarse de que los nombres de equipos sean únicos y ordenar por el mayor número de TD
+    top_teams = data.drop_duplicates(subset=['Team']).sort_values(by='TD', ascending=False).head(10)
+
+    # Crear la gráfica
+    plt.figure(figsize=(10, 6))
+    plt.bar(top_teams['Team'], top_teams['TD'], color='green')
+    plt.title('Top 10 Equipos con Mayor Número de TD por Carrera en la NFL')
+    plt.xlabel('')
+    plt.ylabel('Número de TD')
+    plt.xticks(rotation=45, ha='right')
+    plt.tight_layout()
+    plt.savefig('static/buttom_teams_receiving_td.png')
+    plt.close()
+
+    return 'static/buttom_teams_receiving_td.png'

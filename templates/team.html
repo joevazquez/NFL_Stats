@@ -13,12 +13,15 @@
         html, body, h1, h2, h3, h4, h5 {
             font-family: 'Raleway', sans-serif;
         }
+        .active-page {
+            background-color: green !important;
+        }
     </style>
 </head>
 <body class="w3-light-grey">
     <!-- Top container -->
     <div class="w3-bar w3-top w3-black w3-large" style="z-index: 4">
-        <button class="w3-bar-item w3-button w3-hide-large w3-hover-none w3-hover-text-light-grey" onclick="w3_open();">
+        <button class="w3-bar-item w3-button w3-hide-large w3-hover-none w3-hover-text-light-grey" click="w3_open();">
             <i class="fa fa-bars"></i> Menu
         </button>
         <div class="w3-bar-item w3-right">
@@ -53,6 +56,9 @@
             </a>
             <a href="/college" class="w3-bar-item w3-button w3-padding w3-blue">
                 <i class="fa fa-bar-chart fa-fw"></i> Top and worst College
+            </a>
+            <a href="/nfl_teams" class="w3-bar-item w3-button w3-padding w3-blue">
+                <i class="fa fa-bar-chart fa-fw"></i> Rushing TDs received by team
             </a>
         </div>
     </nav>
@@ -102,6 +108,22 @@
     </div>
 
     <script>
+        // Esperar a que la página se cargue
+        document.addEventListener("DOMContentLoaded", function() {
+        // Obtener la URL actual
+            var currentPath = window.location.pathname;
+
+            // Obtener todos los enlaces en la barra de navegación
+            var navLinks = document.querySelectorAll('.w3-bar-item.w3-button');
+
+            // Iterar sobre cada enlace y verificar si su href coincide con la URL actual
+            navLinks.forEach(function(link) {
+                if (link.getAttribute('href') === currentPath) {
+                    // Añadir la clase 'active-page' al enlace actual
+                    link.classList.add('active-page');
+                }
+            });
+        });
         // Get the Sidebar
         var mySidebar = document.getElementById('mySidebar');
 

@@ -28,11 +28,16 @@ datasets = {
 
 # URLs de las estadísticas
 urls = {
-    "passing_yards": "https://www.nfl.com/stats/player-stats/category/passing/2023/reg/all/passingyards/desc",
-    "rushing_yards": "https://www.nfl.com/stats/player-stats/category/rushing/2023/reg/all/rushingyards/desc",
-    "receiving_yards": "https://www.nfl.com/stats/player-stats/category/receiving/2023/reg/all/receivingreceptions/desc",
-    "interceptions": "https://www.nfl.com/stats/player-stats/category/interceptions/2023/reg/all/defensiveinterceptions/desc",
-    "punt_return_yards": "https://www.nfl.com/stats/player-stats/category/punt-returns/2023/reg/all/puntreturnsaverageyards/desc"
+    "Passing_Yards": "https://www.nfl.com/stats/player-stats/category/passing/2023/reg/all/passingyards/desc",
+    "Rushing_Yards": "https://www.nfl.com/stats/player-stats/category/rushing/2023/reg/all/rushingyards/desc",
+    "Receiving_Yards": "https://www.nfl.com/stats/player-stats/category/receiving/2023/reg/all/receivingreceptions/desc",
+    "Interceptions": "https://www.nfl.com/stats/player-stats/category/interceptions/2023/reg/all/defensiveinterceptions/desc",
+    "Punt_Return_Yards": "https://www.nfl.com/stats/player-stats/category/punt-returns/2023/reg/all/puntreturnsaverageyards/desc",
+    "Defense_Passing_Yards" : "https://www.nfl.com/stats/team-stats/defense/passing/2023/reg/all",
+    "Defense_Rushing_Yards" : "https://www.nfl.com/stats/team-stats/defense/rushing/2023/reg/all",
+    "Defense_Scoring" : "https://www.nfl.com/stats/team-stats/defense/scoring/2023/reg/all",
+    "Interception_by_Team" :  "https://www.nfl.com/stats/team-stats/defense/interceptions/2023/reg/all",
+    "Fumbles_by_Team" :  "https://www.nfl.com/stats/team-stats/defense/fumbles/2023/reg/all"
 }
 
 # Crear el directorio de salida si no existe
@@ -143,6 +148,27 @@ def college_top_worst():
         raise ValueError("Invalid filter value")
     
     return render_template('college.html', graph_path=graph_path)
+
+
+@app.route('/nfl_teams')
+def team_top_worst():
+    # Cargar el conjunto de datos
+    data = pd.read_csv('Scraping_CSV/Defense_Rushing_Yards.csv')
+    
+    # Determinar si mostrar el top 10 con más o menos jugadores
+    filter_value = request.args.get('filter', 'Top')
+    
+    # Llamar a la función correspondiente para generar la gráfica
+    if filter_value == 'Top':
+        graph_path = Config.generate_top_nfl_team_graph(data)
+    elif filter_value == 'Least':
+        graph_path = Config.generate_least_nfl_team_graph(data)
+    else:
+        raise ValueError("Invalid filter value")
+    
+    return render_template('nfl_teams.html', graph_path=graph_path)
+
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000, debug=True)

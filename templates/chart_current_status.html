@@ -13,6 +13,9 @@
         html, body, h1, h2, h3, h4, h5 {
             font-family: 'Raleway', sans-serif;
         }
+        .active-page {
+            background-color: green !important;
+        }
     </style>
 </head>
 <body class="w3-light-grey">
@@ -53,6 +56,9 @@
             </a>
             <a href="/college" class="w3-bar-item w3-button w3-padding w3-blue">
                 <i class="fa fa-bar-chart fa-fw"></i> Top and worst College
+            </a>
+            <a href="/nfl_teams" class="w3-bar-item w3-button w3-padding w3-blue">
+                <i class="fa fa-bar-chart fa-fw"></i> Rushing TDs received by team
             </a>
         </div>
         </div>
@@ -133,6 +139,23 @@
     </div>
 
     <script>
+        // Esperar a que la página se cargue
+        document.addEventListener("DOMContentLoaded", function() {
+        // Obtener la URL actual
+            var currentPath = window.location.pathname;
+
+            // Obtener todos los enlaces en la barra de navegación
+            var navLinks = document.querySelectorAll('.w3-bar-item.w3-button');
+
+            // Iterar sobre cada enlace y verificar si su href coincide con la URL actual
+            navLinks.forEach(function(link) {
+                if (link.getAttribute('href') === currentPath) {
+                    // Añadir la clase 'active-page' al enlace actual
+                    link.classList.add('active-page');
+                }
+            });
+        });
+
         // Get the Sidebar
         var mySidebar = document.getElementById('mySidebar');
 
