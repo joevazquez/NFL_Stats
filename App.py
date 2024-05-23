@@ -13,6 +13,7 @@ app.secret_key = os.urandom(24)  # Generar una clave secreta segura
 #Coment test
 # Ruta base para los archivos CSV
 base_csv_path = 'Datasets'
+#holi prueba
 
 # Diccionario para las rutas de los archivos CSV
 datasets = {
