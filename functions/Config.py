@@ -135,6 +135,8 @@ def start_scheduler():
 # Iniciar el planificador al ejecutar el archivo
 start_scheduler()
 
+#---------------------------------------------------------------------------------------------------------------------------
+
 # Dirección para poder obtener el Dataset
 path_csv_read = 'Datasets/Basic_Stats.csv'
 
@@ -225,6 +227,10 @@ def plot_pie_chart(data):
     plt.savefig('static/plot.png')  # Guardamos la gráfica en un archivo
     plt.close()  # Cerramos la figura para evitar problemas de sobrecarga de gráficos
 
+
+#---------------------------------------------------------------------------------------------------------------------------
+
+
 #Genera la gráfica con las universidades con el mayor número de jugadores activos en la NFL
 def generate_top_nfl_player_graph(data):
     # Filtrar los jugadores activos
@@ -265,6 +271,11 @@ def generate_least_nfl_player_graph(data):
 
     return 'static/least_colleges.png'
 
+
+
+#---------------------------------------------------------------------------------------------------------------------------
+
+
 #Genera la gráfica con los equipos con menor número de TD por carrera
 def generate_top_nfl_team_graph(data):
     # Asegurarse de que los nombres de equipos sean únicos y ordenar por el menor número de TD
@@ -300,3 +311,6 @@ def generate_least_nfl_team_graph(data):
     plt.close()
 
     return 'static/buttom_teams_receiving_td.png'
+
+
+#---------------------------------------------------------------------------------------------------------------------------
