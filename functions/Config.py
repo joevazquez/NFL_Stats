@@ -314,3 +314,39 @@ def generate_least_nfl_team_graph(data):
 
 
 #---------------------------------------------------------------------------------------------------------------------------
+
+# Genera la gráfica con los equipos con menor número de TD por pase
+def generate_top_nfl_team_graph_pass(data):
+    # Asegurarse de que los nombres de equipos sean únicos y ordenar por el menor número de TD por pase
+    bottom_teams = data.drop_duplicates(subset=['Team']).sort_values(by='TD', ascending=True).head(10)
+
+    # Crear la gráfica
+    plt.figure(figsize=(10, 6))
+    plt.bar(bottom_teams['Team'], bottom_teams['TD'], color='green')
+    plt.title('Top 10 Equipos con Menor Número de TD por Pase en la NFL')
+    plt.xlabel('Equipo')
+    plt.ylabel('Número de TD por Pase')
+    plt.xticks(rotation=45, ha='right')
+    plt.tight_layout()
+    plt.savefig('static/least_teams_passing_td.png')  # Cambiado a least
+    plt.close()
+
+    return 'static/least_teams_passing_td.png'  # Cambiado a least
+
+# Genera la gráfica con los equipos con mayor número de TD por pase
+def generate_least_nfl_team_graph_pass(data):
+    # Asegurarse de que los nombres de equipos sean únicos y ordenar por el mayor número de TD por pase
+    top_teams = data.drop_duplicates(subset=['Team']).sort_values(by='TD', ascending=False).head(10)
+
+    # Crear la gráfica
+    plt.figure(figsize=(10, 6))
+    plt.bar(top_teams['Team'], top_teams['TD'], color='red')
+    plt.title('Top 10 Equipos con Mayor Número de TD por Pase en la NFL')
+    plt.xlabel('Equipo')
+    plt.ylabel('Número de TD por Pase')
+    plt.xticks(rotation=45, ha='right')
+    plt.tight_layout()
+    plt.savefig('static/top_teams_passing_td.png')  # Cambiado a top
+    plt.close()
+
+    return 'static/top_teams_passing_td.png'  # Cambiado a top

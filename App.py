@@ -87,6 +87,8 @@ def home():
 def team():
     return render_template("team.html")
 
+#---------------------------------------------------------------------------------------------------------------------------
+
 @app.route("/database", methods=["GET", "POST"])
 def database():
     selected_dataset = request.form.get("dataset", "basic_stats")  # Default to basic_stats
@@ -105,6 +107,8 @@ def database():
     # Pasar el nombre del dataset al contexto de la plantilla
     return render_template("database.html", table_html=df_html, selected_dataset=selected_dataset.replace('_', ' '))
 
+#---------------------------------------------------------------------------------------------------------------------------
+
 @app.route("/scrape", methods=["GET", "POST"])
 def scrape():
     if request.method == "POST":
@@ -117,6 +121,8 @@ def scrape():
                 flash("Error: No se pudieron extraer los datos.")
                 return redirect(url_for('scrape'))
     return render_template("scrape.html", categories=Config.urls.keys())
+
+#---------------------------------------------------------------------------------------------------------------------------
 
 @app.route("/chart_current_status", methods=["GET", "POST"])
 def chart():
@@ -132,6 +138,8 @@ def chart():
         return render_template("chart_current_status.html", headers=headers, rows=rows)
     
     return render_template("chart_current_status.html")
+
+#---------------------------------------------------------------------------------------------------------------------------
 
 @app.route('/college')
 def college_top_worst():
@@ -151,6 +159,7 @@ def college_top_worst():
     
     return render_template('college.html', graph_path=graph_path)
 
+#---------------------------------------------------------------------------------------------------------------------------
 
 @app.route('/nfl_teams')
 def team_top_worst():
@@ -169,6 +178,28 @@ def team_top_worst():
         raise ValueError("Invalid filter value")
     
     return render_template('nfl_teams.html', graph_path=graph_path)
+
+#---------------------------------------------------------------------------------------------------------------------------
+
+@app.route('/nfl_teams_pass')
+def team_top_worst_pass():
+    # Cargar el conjunto de datos
+    data = pd.read_csv('Scraping_CSV/Defense_Passing_Yards.csv')
+    
+    # Determinar si mostrar el top 10 con más o menos jugadores
+    filter_value = request.args.get('filter', 'Top')
+    
+    # Llamar a la función correspondiente para generar la gráfica
+    if filter_value == 'Top':
+        graph_path = Config.generate_top_nfl_team_graph_pass(data)
+    elif filter_value == 'Least':
+        graph_path = Config.generate_least_nfl_team_graph_pass(data)
+    else:
+        raise ValueError("Invalid filter value")
+    
+    return render_template('nfl_teams_pass.html', graph_path=graph_path)
+
+#---------------------------------------------------------------------------------------------------------------------------
 
 
 
