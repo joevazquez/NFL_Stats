@@ -71,6 +71,9 @@
             <a href="/calendar" class="w3-bar-item w3-button w3-padding w3-blue">
                 <i class="fa fa-calendar fa-fw"></i> Calendar
             </a>
+            <a href="/eficiencia" class="w3-bar-item w3-button w3-padding w3-blue">
+                <i class="fa fa-users fa-fw"></i> Carry efficiency
+            </a>
         </div>
     </nav>
 
@@ -78,7 +81,7 @@
     <div class="w3-overlay w3-hide-large w3-animate-opacity" onclick="w3_close()" style="cursor: pointer" title="close side menu" id="myOverlay"></div>
 
     <!-- !PAGE CONTENT! -->
-    <div class="w3-main" style="margin-left: 300px; margin-top: 43px">
+    <div class="w3-main" style="margin-left: 310px; margin-top: 43px">
         <!-- Header -->
         <header class="w3-container" style="padding-top: 2vw">
             <h5>
@@ -104,6 +107,7 @@
             </select>
             <button type="submit">Aplicar filtro</button>
         </form>
+        <br>
         <div class="scrollable-table">
             {{ tabla_html | safe }}
         </div>

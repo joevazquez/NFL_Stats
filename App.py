@@ -222,5 +222,21 @@ def mostrar_tabla():
 
     return render_template("calendar.html", tabla_html=tabla_html, equipos=equipos, semanas=semanas)
 
+#---------------------------------------------------------------------------------------------------------------------------
+
+@app.route('/eficiencia')
+def mostrar_resultados():
+    jugadores = []
+    with open('Scraping_CSV/rushing_yards.csv', 'r') as file:
+        csv_reader = csv.DictReader(file)
+        for row in csv_reader:
+            TD_actuales = int(row['TD'])
+            Att_actuales = int(row['Att'])
+            intentos_necesarios = Config.calcular_intentos_para_TD(TD_actuales, Att_actuales)
+            jugadores.append({"nombre": row['Player'], "TD": TD_actuales, "Att": Att_actuales, "intentos_necesarios": intentos_necesarios})
+    return render_template('eficiencia.html', jugadores=jugadores)
+
+#---------------------------------------------------------------------------------------------------------------------------
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000, debug=True)

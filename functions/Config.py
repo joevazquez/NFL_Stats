@@ -355,6 +355,21 @@ def generate_least_nfl_team_graph_pass(data):
 
 #---------------------------------------------------------------------------------------------------------------------------
 
+# Lectura del archivo Calendar.csv para poder mostrarlo en la tabla del HTML
 def cargar_datos_desde_csv(archivo_csv):
     df = pd.read_csv(archivo_csv)
     return df
+
+#---------------------------------------------------------------------------------------------------------------------------
+
+# Función para calcular el número de intentos necesarios para marcar un TD
+def calcular_intentos_para_TD(TD_actuales, Att_actuales):
+    if TD_actuales == 0:
+        return "No se pueden calcular intentos para marcar un TD sin haber marcado al menos uno previamente."
+    else:
+        intentos_necesarios = round(Att_actuales / TD_actuales)
+        return intentos_necesarios
+
+
+#---------------------------------------------------------------------------------------------------------------------------
+
