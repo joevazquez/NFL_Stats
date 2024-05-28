@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>NFL Statistic Dashboard</title>
+    <title>NFL Statistic Prediction</title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" />
@@ -16,13 +16,18 @@
         .active-page {
             background-color: green !important;
         }
+
+        .scrollable-table {
+            max-height: 500px; /* Ajusta la altura máxima según necesites */
+            overflow-y: auto; /* Agrega el scroll vertical */
+        }
     </style>
 </head>
 <body class="w3-light-grey">
     <!-- Top container -->
     <div class="w3-bar w3-top w3-black w3-large" style="z-index: 4">
         <button class="w3-bar-item w3-button w3-hide-large w3-hover-none w3-hover-text-light-grey" click="w3_open();">
-            <i class="fa fa-pie-chart"></i> Menu
+            <i class="fa fa-bars"></i> Menu
         </button>
         <div class="w3-bar-item w3-right">
             <div class="w3-col s4" style="width: 5vw; height: auto">
@@ -67,7 +72,6 @@
                 <i class="fa fa-calendar fa-fw"></i> Calendar
             </a>
         </div>
-        </div>
     </nav>
 
     <!-- Overlay effect when opening sidebar on small screens -->
@@ -78,34 +82,40 @@
         <!-- Header -->
         <header class="w3-container" style="padding-top: 2vw">
             <h5>
-                <b><i class="fa fa-pie-chart"></i> Receiving Rushing TD by Team </b>
+                <b><i class="fa fa-calendar"></i> Calendar </b>
             </h5>
         </header>
 
-        <!-- Formulario para seleccionar los datos a mostrar en la gráfica -->
-        <div class="w3-container w3-padding-32">
-            <h5>Select Data for Chart:</h5>
-            <form id="chartForm" class="w3-form" method="post" action="{{ url_for('college_top_worst') }}">
-                <select name="top" id="topSelect" class="w3-select w3-margin-top">
-                    <option value="Top">Top 10 con más jugadores</option>
-                    <option value="Least">Top 10 con menos jugadores</option>
-                </select>
-                <button type="submit" class="w3-button w3-blue w3-margin-top">Generate Chart</button>
-            </form>
+        <h1>Calendar</h1>
+        <form method="post">
+            <label for="equipo">Filtrar por equipo:</label>
+            <select name="equipo" id="equipo">
+                <option value="">Todos los equipos</option>
+                {% for equipo in equipos %}
+                <option value="{{ equipo }}">{{ equipo }}</option>
+                {% endfor %}
+            </select>
+            <label for="semana">Filtrar por semana:</label>
+            <select name="semana" id="semana">
+                <option value="">Todas las semanas</option>
+                {% for semana in semanas %}
+                <option value="{{ semana }}">{{ semana }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit">Aplicar filtro</button>
+        </form>
+        <div class="scrollable-table">
+            {{ tabla_html | safe }}
         </div>
+        
 
-        <!-- Sección para mostrar la gráfica -->
-        <div id="chartContainer" class="w3-container w3-padding-32">
-            <img id="chartImage" src="{{ graph_path }}" style="width: 100%; height: auto;" />
-        </div>
-
-        <!-- Footer -->
-        <footer class="w3-container w3-padding-16 w3-light-grey">
-            <p>
-                Powered by
-                <a href="https://www.up.edu.mx/educacion-universidad-facultad-de-ingenieria/" target="_blank">Universidad Panamericana</a>
-            </p>
-        </footer>
+            <!-- Footer -->
+            <footer class="w3-container w3-padding-16 w3-light-grey">
+                <p>
+                    Powered by
+                    <a href="https://www.up.edu.mx/educacion-universidad-facultad-de-ingenieria/" target="_blank">Universidad Panamericana</a>
+                </p>
+            </footer>
 
         <!-- End page content -->
     </div>
@@ -151,23 +161,17 @@
             overlayBg.style.display = 'none';
         }
 
-        // Cambiar la imagen de la gráfica según la opción seleccionada
-        document.getElementById('chartForm').addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevenir el comportamiento por defecto del formulario
-
-            var topSelect = document.getElementById('topSelect');
-            var chartImage = document.getElementById('chartImage');
-            var chartContainer = document.getElementById('chartContainer');
-
-            if (topSelect.value === 'Top') {
-                chartImage.src = "{{ url_for('static', filename='plot_most.png') }}";
-                
-            } if (topSelect.value === 'Least') {
-                chartImage.src = "{{ url_for('static', filename='plot_least.png') }}";
-            } else {
-                chartImage.src = "{{ url_for('static', filename='plot_most.png') }}";
-            }
-                
+        // ScrollReveal configuration
+        ScrollReveal().reveal('.w3-container, .w3-third', {
+            origin: 'bottom',
+            distance: '50px',
+            duration: 1000,
+            delay: 200,
+            rotate: { x: 0, y: 0, z: 0 },
+            opacity: 0,
+            scale: 1,
+            easing: 'cubic-bezier(0.6, 0.2, 0.1, 1)',
+            reset: false,
         });
     </script>
 </body>

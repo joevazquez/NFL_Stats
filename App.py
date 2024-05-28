@@ -201,7 +201,26 @@ def team_top_worst_pass():
 
 #---------------------------------------------------------------------------------------------------------------------------
 
+@app.route("/calendar", methods=["GET", "POST"])
+def mostrar_tabla():
+    archivo_csv = 'Scraping_CSV/Calendar.csv'  # Ruta del archivo Calendar.csv
+    df = Config.cargar_datos_desde_csv(archivo_csv)
 
+    equipos = df['TEAM'].unique()
+    semanas = df.columns[2:]
+
+    equipo_seleccionado = request.form.get('equipo')
+    semana_seleccionada = request.form.get('semana')
+
+    if equipo_seleccionado:
+        df = df[df['TEAM'] == equipo_seleccionado]
+
+    if semana_seleccionada:
+        df = df[['TEAM', semana_seleccionada]]
+
+    tabla_html = df.to_html(classes='w3-table w3-bordered w3-striped w3-hoverable', index=False)
+
+    return render_template("calendar.html", tabla_html=tabla_html, equipos=equipos, semanas=semanas)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000, debug=True)

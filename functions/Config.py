@@ -350,3 +350,9 @@ def generate_least_nfl_team_graph_pass(data):
     plt.close()
 
     return 'static/top_teams_passing_td.png'  # Cambiado a top
+
+#---------------------------------------------------------------------------------------------------------------------------
+
+def cargar_datos_desde_csv(archivo_csv):
+    df = pd.read_csv(archivo_csv)
+    return df
