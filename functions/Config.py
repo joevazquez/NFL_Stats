@@ -49,7 +49,9 @@ urls = {
     "Defense_Rushing_Yards" : "https://www.nfl.com/stats/team-stats/defense/rushing/2023/reg/all",
     "Defense_Scoring" : "https://www.nfl.com/stats/team-stats/defense/scoring/2023/reg/all",
     "Interception_by_Team" :  "https://www.nfl.com/stats/team-stats/defense/interceptions/2023/reg/all",
-    "Fumbles_by_Team" :  "https://www.nfl.com/stats/team-stats/defense/fumbles/2023/reg/all"
+    "Fumbles_by_Team" :  "https://www.nfl.com/stats/team-stats/defense/fumbles/2023/reg/all",
+    "Ofensive_Passing_Yards" : "https://www.nfl.com/stats/team-stats/offense/passing/2023/reg/all",
+    "Ofensive_Rushing_Yards" :  "https://www.nfl.com/stats/team-stats/offense/rushing/2023/reg/all"
 }
 
 # Crear el directorio de salida si no existe
