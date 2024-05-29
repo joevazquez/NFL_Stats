@@ -169,12 +169,12 @@
             var chartContainer = document.getElementById('chartContainer');
 
             if (topSelect.value === 'Top') {
-                chartImage.src = "{{ url_for('static', filename='top_teams_receiving_td.png') }}";
+                chartImage.src = "{{ url_for('static', filename='buttom_teams_receiving_td.png') }}";
                 
             } if (topSelect.value === 'Least') {
-                chartImage.src = "{{ url_for('static', filename='buttom_teams_receiving_td.png') }}";
-            } else {
                 chartImage.src = "{{ url_for('static', filename='top_teams_receiving_td.png') }}";
+            } else {
+                chartImage.src = "{{ url_for('static', filename='buttom_teams_receiving_td.png') }}";
             }
                 
         });
