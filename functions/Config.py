@@ -379,3 +379,12 @@ def calcular_intentos_para_TD_por_pase(TD_actuales, Att_actuales):
     else:
         intentos_necesarios = round(Att_actuales / TD_actuales)
         return intentos_necesarios
+
+#---------------------------------------------------------------------------------------------------------------------------
+
+def calcular_intentos_para_TD_por_lanzamiento(TD_actuales, Att_actuales):
+    if TD_actuales == 0:
+        return "No se pueden calcular intentos para marcar un TD sin haber marcado al menos uno previamente."
+    else:
+        intentos_necesarios = round(Att_actuales / TD_actuales)
+        return intentos_necesarios

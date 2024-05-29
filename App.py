@@ -239,7 +239,7 @@ def mostrar_resultados():
 #---------------------------------------------------------------------------------------------------------------------------
 
 @app.route('/eficiencia_catch')
-def mostrar_resultados_pase():
+def mostrar_resultados_atrapada():
     jugadores = []
     with open('Scraping_CSV/Receiving_Yards.csv', 'r') as file:
         csv_reader = csv.DictReader(file)
@@ -249,6 +249,20 @@ def mostrar_resultados_pase():
             intentos_necesarios = Config.calcular_intentos_para_TD_por_pase(TD_actuales, Att_actuales)
             jugadores.append({"nombre": row['Player'], "TD": TD_actuales, "Att": Att_actuales, "intentos_necesarios": intentos_necesarios})
     return render_template('eficiencia_catch.html', jugadores=jugadores)
+
+#---------------------------------------------------------------------------------------------------------------------------
+
+@app.route('/eficiencia_pass')
+def mostrar_resultados_pase():
+    jugadores = []
+    with open('Scraping_CSV/Passing_Yards.csv', 'r') as file:
+        csv_reader = csv.DictReader(file)
+        for row in csv_reader:
+            TD_actuales = int(row['TD'])
+            Att_actuales = int(row['Att'])
+            intentos_necesarios = Config.calcular_intentos_para_TD_por_lanzamiento(TD_actuales, Att_actuales)
+            jugadores.append({"nombre": row['Player'], "TD": TD_actuales, "Att": Att_actuales, "intentos_necesarios": intentos_necesarios})
+    return render_template('eficiencia_pass.html', jugadores=jugadores)
 
 #---------------------------------------------------------------------------------------------------------------------------
 
