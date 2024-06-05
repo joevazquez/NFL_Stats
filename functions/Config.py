@@ -1,4 +1,5 @@
 # Importamos las Librerías que vamos a utilizar para el desarollo del proyecto
+import random
 import requests
 from bs4 import BeautifulSoup
 import os
@@ -419,7 +420,7 @@ def read_qb_data(file_path):
 
 #---------------------------------------------------------------------------------------------------------------------------
 
-def determine_winners(games, qbs_by_team, defenses):
+def determine_winners(games, qbs_by_team, defenses, weighting_factor=1):
     winners = []
     for game in games:
         home_team, away_team = game['home_team'], game['away_team']
@@ -429,15 +430,26 @@ def determine_winners(games, qbs_by_team, defenses):
         total_td_home = sum(int(td) if td else 0 for td in qbs_by_team.get(home_team, []))
         total_td_away = sum(int(td) if td else 0 for td in qbs_by_team.get(away_team, []))
 
-        predicted_score_home = total_td_home - avg_td_allowed_away
-        predicted_score_away = total_td_away - avg_td_allowed_home
+        offensive_score_home = total_td_home
+        defensive_score_home = avg_td_allowed_away
 
-        if predicted_score_home > predicted_score_away:
+        offensive_score_away = total_td_away
+        defensive_score_away = avg_td_allowed_home
+
+        team_score_home = (offensive_score_home - defensive_score_home) * weighting_factor
+        team_score_away = (offensive_score_away - defensive_score_away) * weighting_factor
+
+        if team_score_home > team_score_away:
             winners.append(home_team)
-        else:
+        elif team_score_away > team_score_home:
             winners.append(away_team)
+        else:
+            # En caso de empate, podríamos manejarlo de diferentes maneras, como un empate o un factor de desempate adicional.
+            # Aquí, por simplicidad, estamos seleccionando aleatoriamente un ganador en caso de empate.
+            winners.append(random.choice([home_team, away_team]))
     
     return winners
+
 
 #---------------------------------------------------------------------------------------------------------------------------
 
