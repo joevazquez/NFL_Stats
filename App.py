@@ -266,5 +266,48 @@ def mostrar_resultados_pase():
 
 #---------------------------------------------------------------------------------------------------------------------------
 
+@app.route('/predict_winners', methods=['GET', 'POST'])
+def predict_winners():
+    if request.method == 'POST':
+        week = request.form.get('week')
+        home_team = request.form.get('home_team')
+        away_team = request.form.get('away_team')
+    else:
+        week = request.args.get('week')
+        home_team = request.args.get('home_team')
+        away_team = request.args.get('away_team')
+
+    # Leer el calendario
+    calendar_file_path = 'Scraping_CSV/Calendar.csv'
+    games = Config.read_calendar(calendar_file_path)
+
+    # Leer los datos de los QBs
+    qb_data_by_team_file_path = 'Datasets/QB_by_Team.csv'
+    qb_data_by_team = Config.read_qb_by_team(qb_data_by_team_file_path)
+
+    # Leer los datos de los QBs
+    qb_file_path = 'Scraping_CSV/Passing_Yards.csv'
+    qbs_data = Config.read_qb_data(qb_file_path)
+
+    # Leer los datos de las defensas
+    defense_file_path = 'Scraping_CSV/Defense_Passing_Yards.csv'
+    defenses = Config.read_defense_data(defense_file_path)
+
+    # Ejecutar el análisis para predecir los ganadores
+    winners = Config.determine_winners(games, qb_data_by_team, defenses)
+
+    # Filtrar los juegos según los parámetros recibidos
+    filtered_games = []
+    for game in games:
+        if (not week or game['week'] == week) and \
+           (not home_team or game['home_team'] == home_team) and \
+           (not away_team or game['away_team'] == away_team):
+            filtered_games.append(game)
+
+    # Renderizar la plantilla HTML con los resultados
+    return render_template('predict_winners.html', games=filtered_games, winners=winners)
+
+#---------------------------------------------------------------------------------------------------------------------------
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000, debug=True)

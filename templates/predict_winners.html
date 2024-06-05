@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Scrape Data</title>
+    <title>NFL Statistic Prediction</title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css" />
@@ -16,13 +16,18 @@
         .active-page {
             background-color: green !important;
         }
+
+        .scrollable-table {
+            max-height: 500px; /* Ajusta la altura máxima según necesites */
+            overflow-y: auto; /* Agrega el scroll vertical */
+        }
     </style>
 </head>
 <body class="w3-light-grey">
     <!-- Top container -->
     <div class="w3-bar w3-top w3-black w3-large" style="z-index: 4">
-        <button class="w3-bar-item w3-button w3-hide-large w3-hover-none w3-hover-text-light-grey" onclick="w3_open();">
-            <i class="fa fa-pie-chart"></i> Menu <!-- Cambiado a un icono de gráfica -->
+        <button class="w3-bar-item w3-button w3-hide-large w3-hover-none w3-hover-text-light-grey" click="w3_open();">
+            <i class="fa fa-bars"></i> Menu
         </button>
         <div class="w3-bar-item w3-right">
             <div class="w3-col s4" style="width: 5vw; height: auto">
@@ -79,84 +84,66 @@
                 <i class="fa fa fa-bullseye"></i> Predict Winners
             </a>
         </div>
-        </div>
     </nav>
 
-    <!-- Overlay effect when opening sidebar on small screens -->
-    <div class="w3-overlay w3-hide-large w3-animate-opacity" onclick="w3_close()" style="cursor: pointer" title="close side menu" id="myOverlay"></div>
+     <!-- Overlay effect when opening sidebar on small screens -->
+     <div class="w3-overlay w3-hide-large w3-animate-opacity" onclick="w3_close()" style="cursor: pointer" title="close side menu" id="myOverlay"></div>
 
-    <!-- !PAGE CONTENT! -->
-    <div class="w3-main" style="margin-left: 300px; margin-top: 43px">
-        <!-- Header -->
-        <header class="w3-container" style="padding-top: 2vw">
-            <h5>
-                <b><i class="fa fa-pie-chart"></i> Current Status </b> <!-- Cambiado a un icono de gráfica -->
-            </h5>
-        </header>
+     <div class="w3-main" style="margin-left: 310px; margin-top: 43px">
+         <!-- Header -->
+         <header class="w3-container" style="padding-top: 2vw">
+             <h5>
+                 <b><i class="fa fa-bullseye"></i> Predict Winners </b>
+             </h5>
+         </header>
+ 
+         <h1>Games</h1>
+         
+         <div class="scrollable-table">
+             <table class="w3-table w3-striped w3-bordered" id="gamesTable">
+                 <tr>
+                     <th>Semana</th>
+                     <th>Equipo Local</th>
+                     <th>Equipo Visitante</th>
+                     <th>Ganador</th>
+                 </tr>
+                 {% for game in games %}
+                 <tr>
+                     <td>{{ game.week }}</td>
+                     <td>{{ game.home_team }}</td>
+                     <td>{{ game.away_team }}</td>
+                     <td>{{ winners[loop.index0] }}</td>
+                 </tr>
+                 {% endfor %}
+             </table>
+         </div>
+        
 
-        <!-- Formulario para seleccionar los datos a mostrar en la gráfica -->
-        <div class="w3-container w3-padding-32">
-            <h5>Select Data for Chart:</h5>
-            <form method="post" action="{{ url_for('chart') }}">
-                <select name="experience" class="w3-select w3-margin-top">
-                    <option value="">All Experience</option>
-                        <option value="0 Season">Rookie</option>
-                        <option value="1 Season">1 Season</option>
-                        <option value="2nd season">2nd Season</option>
-                        <option value="3th season">3th Season</option>
-                        <option value="4th season">4th Season</option>
-                        <option value="5th season">5th Season</option>
-                        <option value="6th season">6th Season</option>
-                        <option value="7th season">7th Season</option>
-                        <option value="8th season">8th Season</option>
-                        <option value="9th season">9th Season</option>
-                        <option value="10th season">10th Season</option>
-                        <option value="11th season">11th Season</option>
-                        <option value="12th season">12th Season</option>
-                        <option value="13th season">13th Season</option>
-                        <option value="14th season">14th Season</option>
-                        <option value="15th season">15th Season</option>
-                        <option value="16th season">16th Season</option>
-                        <option value="17th season">17th Season</option>
-                        <option value="18th season">18th Season</option>
-                        <option value="19th season">19th Season</option>
-                        <option value="20th season">20th Season</option>
-                        <option value="21th season">21th Season</option>
-                        <option value="22th season">22th Season</option>
-                        <option value="23th season">23th Season</option>
-                        <option value="24th season">24th Season</option>
-                        <option value="25th season">25th Season</option>
-                </select>
-                <select name="status" class="w3-select w3-margin-top">
-                    <option value="">All Status</option>
-                    <option value="Active">Active</option>
-                    <option value="Retired">Retired</option>
-                    <option value="Injured Reserve">Injured Reserve</option>
-                    <option value="Physically Unable to Perform">Physically Unable to Perform</option>
-                    <option value="Suspended">Suspended</option>
-                    <option value="Unsigned Free Agent">Unsigned Free Agent</option>
-                </select>
-                <button type="submit" class="w3-button w3-blue w3-margin-top">Generate Chart</button>
-            </form>
-        </div>
-
-        <!-- Sección para mostrar la gráfica -->
-        <div class="w3-container w3-padding-32">
-            <img src="{{ url_for('static', filename='plot.png') }}" style="width: 100%; height: auto;" />
-        </div>
-
-        <!-- Footer -->
-        <footer class="w3-container w3-padding-16 w3-light-grey">
-            <p>
-                Powered by
-                <a href="https://www.up.edu.mx/educacion-universidad-facultad-de-ingenieria/" target="_blank">Universidad Panamericana</a>
-            </p>
-        </footer>
+            <!-- Footer -->
+            <footer class="w3-container w3-padding-16 w3-light-grey">
+                <p>
+                    Powered by
+                    <a href="https://www.up.edu.mx/educacion-universidad-facultad-de-ingenieria/" target="_blank">Universidad Panamericana</a>
+                </p>
+            </footer>
 
         <!-- End page content -->
     </div>
 
     <script>
+        function applyFilters() {
+        var week = document.getElementById("week").value;
+        var homeTeam = document.getElementById("homeTeam").value;
+        var awayTeam = document.getElementById("awayTeam").value;
+
+        fetch(`/filter_games?week=${week}&homeTeam=${homeTeam}&awayTeam=${awayTeam}`)
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById("gamesTable").innerHTML = html;
+            })
+            .catch(error => console.error('Error al aplicar filtros:', error));
+    }
+        
         // Esperar a que la página se cargue
         document.addEventListener("DOMContentLoaded", function() {
         // Obtener la URL actual

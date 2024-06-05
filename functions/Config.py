@@ -388,3 +388,106 @@ def calcular_intentos_para_TD_por_lanzamiento(TD_actuales, Att_actuales):
     else:
         intentos_necesarios = round(Att_actuales / TD_actuales)
         return intentos_necesarios
+
+#---------------------------------------------------------------------------------------------------------------------------
+
+def read_defense_data(file_path):
+    defenses = {}
+
+    with open(file_path, 'r', newline='') as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            team = row['Team'].strip()
+            td_allowed = int(row['TD'].strip())
+            defenses[team] = td_allowed
+    
+    return defenses
+
+#---------------------------------------------------------------------------------------------------------------------------
+
+def read_qb_data(file_path):
+    qbs = {}
+
+    with open(file_path, 'r', newline='') as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            player = row['Player'].strip()
+            td = int(row['TD'].strip())
+            qbs[player] = td
+    
+    return qbs
+
+#---------------------------------------------------------------------------------------------------------------------------
+
+def determine_winners(games, qbs_by_team, defenses):
+    winners = []
+    for game in games:
+        home_team, away_team = game['home_team'], game['away_team']
+        avg_td_allowed_home = defenses.get(home_team, 0)
+        avg_td_allowed_away = defenses.get(away_team, 0)
+
+        total_td_home = sum(int(td) if td else 0 for td in qbs_by_team.get(home_team, []))
+        total_td_away = sum(int(td) if td else 0 for td in qbs_by_team.get(away_team, []))
+
+        predicted_score_home = total_td_home - avg_td_allowed_away
+        predicted_score_away = total_td_away - avg_td_allowed_home
+
+        if predicted_score_home > predicted_score_away:
+            winners.append(home_team)
+        else:
+            winners.append(away_team)
+    
+    return winners
+
+#---------------------------------------------------------------------------------------------------------------------------
+
+def read_calendar(file_path):
+    df = pd.read_csv(file_path)
+    games = []
+
+    for week in df.columns[1:]:
+        week_games = set()  # Usar un conjunto para evitar duplicados en la misma semana
+        for _, row in df.iterrows():
+            team = row['TEAM']
+            opponent = row[week]
+            if '@' in opponent:
+                opponent_team = opponent[1:]
+                home_team = opponent_team
+                away_team = team
+            else:
+                opponent_team = opponent
+                home_team = team
+                away_team = opponent_team
+
+            if home_team == 'BYE' or away_team == 'BYE':
+                winner = 'BYE'
+            else:
+                winner = None
+
+            game = {
+                'week': week,
+                'home_team': home_team,
+                'away_team': away_team,
+                'winner': winner
+            }
+
+            # Agregar el juego al conjunto solo si no está en la lista de juegos de la semana
+            if (home_team, away_team) not in week_games:
+                games.append(game)
+                week_games.add((home_team, away_team))
+    
+    return games
+
+#---------------------------------------------------------------------------------------------------------------------------
+
+def read_qb_by_team(file_path):
+    qbs_by_team = {}
+    with open(file_path, 'r', newline='') as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            team = row.get('Team', '').strip()
+            qb = row.get('QB', '').strip()
+            if team not in qbs_by_team:
+                qbs_by_team[team] = []
+            qbs_by_team[team].append(qb)
+    return qbs_by_team
